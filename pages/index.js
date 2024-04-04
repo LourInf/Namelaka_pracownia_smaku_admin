@@ -1,30 +1,27 @@
-import { useSession, signIn, signOut } from "next-auth/react";
-import Nav from "@/components/Nav";
+import Layout from "@/components/Layout";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { data: session } = useSession();
-  if (!session) {
-    return (
-      <div className="bg-blue-900 w-screen h-screen flex items-center">
-        <div className="text-center w-full">
-          <button
-            onClick={() => signIn("google")} //you need to add a provider as parameter, for google is "google" to return to our btn
-            className="bg-white p-2 px-4 rounded-lg"
-          >
-            Log in with Google
-          </button>
-        </div>
-      </div>
-    );
-  }
+  console.log(session);
+
+  if (!session) return;
 
   return (
-    <div className="bg-blue-900 min-h-screen flex">
-      <Nav />
-      <div className="bg-white flex-grow mt-2 mr-2 mb-2 rounded-lg p-4">
-        logged in {session.user.email}
+    <Layout>
+      <div className="text-blue-900 flex justify-between">
+        <h2>
+          Hello, <b>{session?.user?.name}</b>
+        </h2>
+        <div className="flex bg-gray-300 gap-1 text-black rounded-lg overflow-hidden">
+          <img
+            src={session?.user?.image}
+            alt="profile picture"
+            className="w-6 h-6"
+          />
+          <span className="px-2">{session?.user?.name}</span>
+        </div>
       </div>
-      ;
-    </div>
+    </Layout>
   );
 }
