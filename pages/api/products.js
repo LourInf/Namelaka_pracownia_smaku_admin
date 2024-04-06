@@ -38,4 +38,11 @@ export default async function handle(req, res) {
     await Product.updateOne({ _id: _id }, { title, description, price }); //title:title, description:descr., price:price names are the same so we can just write once
     res.json(true);
   }
+
+  if (method === "DELETE") {
+    if (req.query?.id) {
+      await Product.deleteOne({ _id: req.query.id });
+      res.json(true);
+    }
+  }
 }

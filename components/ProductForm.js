@@ -20,6 +20,12 @@ export default function ProductForm({
   async function saveProduct(e) {
     const data = { title, description, price };
     e.preventDefault();
+    //first we do a simple form validation --> Ensuring that form data is valid before attempting to save can prevent unnecessary API requests and improve data integrity.
+    if (!title.trim() || !price) {
+      alert("Title and price are required.");
+      return;
+    }
+
     if (_id) {
       //update the product with that id
       await axios.put("/api/products", { ...data, _id });
