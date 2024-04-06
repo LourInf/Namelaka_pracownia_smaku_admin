@@ -9,6 +9,16 @@ export default async function handle(req, res) {
   const { method } = req;
   //2.First we need to establish a connection to MongoDB database calling function mongooseConnect
   await mongooseConnect();
+
+  //fetch all product data stored in your MongoDB database.
+  if (method === "GET") {
+    if (req.query?.id) {
+      res.json(await Product.findOne({ _id: req.query.id }));
+    } else {
+      //Mongoose's find method retrieves all (all because no arguments entered) docs from the collection associated with the Product model.
+      res.json(await Product.find());
+    }
+  }
   //3.If the request method is a post, create new product
   if (method === "POST") {
     //3.1.Extract title, description, and price from the request body
@@ -18,7 +28,14 @@ export default async function handle(req, res) {
     const productDoc = await Product.create({ title, description, price });
     //3.3. The client (browser) receives the JSON response containing the newly created product.
     //Having this response, we can use it to display a success message, update the UI, or redirect the user to another page,
-    // whatever the action, it would need to be implemented in the createProduct function after the axios request (in new.js)!
+    // whatever the action, it would need to be implemented in the saveProduct function after the axios request (in new.js)!
     res.json(productDoc);
+  }
+
+  if (method === "PUT") {
+    //3.1.Extract title, description, and price from the request body
+    const { title, description, price, _id } = req.body;
+    await Product.updateOne({ _id: _id }, { title, description, price }); //title:title, description:descr., price:price names are the same so we can just write once
+    res.json(true);
   }
 }
