@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
+import Image from "next/image";
 
 export default function ProductForm({
   _id,
@@ -88,7 +89,14 @@ export default function ProductForm({
           {!!images?.length &&
             images.map((link) => (
               <div key={link} className="h-24">
-                <img src={link} alt="" className="rounded-lg" />
+                <Image
+                  src={link}
+                  alt=""
+                  className="rounded-lg"
+                  width={40}
+                  height={30}
+                  layout="responsive"
+                />
               </div>
             ))}
         </ReactSortable>
