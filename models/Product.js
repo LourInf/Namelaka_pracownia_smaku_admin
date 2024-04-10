@@ -10,6 +10,7 @@ const ProductSchema = new Schema({
   description: String,
   price: { type: Number, required: true },
   images: [{ type: String }], //images are an array of type string
+  category: { type: mongoose.Types.ObjectId, ref: "Category" },
 });
 
 //2. Model creation: Mongoose compiles this schema into a model ("Product") or uses an existing one if it already exists

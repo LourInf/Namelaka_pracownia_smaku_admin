@@ -22,7 +22,7 @@ export default async function handle(req, res) {
   //3.If the request method is a post, create new product
   if (method === "POST") {
     //3.1.Extract title, description, and price from the request body
-    const { title, description, price, images } = req.body;
+    const { title, description, price, images, category } = req.body;
     //3.2.Document creation: use Product model to create a new doc in the database with the provided data
     //The model "Product" acts as a constructor for creating a new document (Product.create()) that matches the ProductSchema schema
     const productDoc = await Product.create({
@@ -30,6 +30,7 @@ export default async function handle(req, res) {
       description,
       price,
       images,
+      category,
     });
     //3.3. The client (browser) receives the JSON response containing the newly created product.
     //Having this response, we can use it to display a success message, update the UI, or redirect the user to another page,
@@ -39,10 +40,10 @@ export default async function handle(req, res) {
 
   if (method === "PUT") {
     //3.1.Extract title, description, and price from the request body
-    const { title, description, price, images, _id } = req.body;
+    const { title, description, price, images, category, _id } = req.body;
     await Product.updateOne(
       { _id: _id },
-      { title, description, price, images }
+      { title, description, price, images, category }
     ); //title:title, description:descr., price:price names are the same so we can just write once
     res.json(true);
   }
