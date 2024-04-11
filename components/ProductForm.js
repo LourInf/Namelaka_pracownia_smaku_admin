@@ -11,6 +11,7 @@ export default function ProductForm({
   price: existingPrice,
   images: existingImages,
   category: existingCategory,
+  properties: assignedProperties,
 }) {
   const [title, setTitle] = useState(existingTitle || "");
   const [description, setDescription] = useState(existingDescription || "");
@@ -20,6 +21,9 @@ export default function ProductForm({
   const [isUploading, setIsUploading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(existingCategory || "");
+  const [productProperties, setProductProperties] = useState(
+    assignedProperties || {}
+  );
   const router = useRouter();
 
   //fetches all the categories so we can later show them as options in the select input
@@ -33,7 +37,14 @@ export default function ProductForm({
   //and sends this data to my server's endpoint using axios put (to edit an existing product, if it has an id)
   //or post (to create a new product) method
   async function saveProduct(e) {
-    const data = { title, description, price, images, category };
+    const data = {
+      title,
+      description,
+      price,
+      images,
+      category,
+      properties: productProperties,
+    };
     e.preventDefault();
     //first we do a simple form validation --> Ensuring that form data is valid before attempting to save can prevent unnecessary API requests and improve data integrity.
     if (!title.trim() || !price) {
@@ -79,6 +90,39 @@ export default function ProductForm({
     setImages(images);
   }
 
+  function handleSetProductProp(propName, value) {
+    setProductProperties((prev) => {
+      const newProductProps = { ...prev };
+      newProductProps[propName] = value;
+      return newProductProps;
+    });
+  }
+
+  //I want a category to show all the properties of the selected category, plus all the properties of its parent categories
+  //so we can accumulate all those properties into 1 array, propertiesToFill
+  const propertiesToFill = [];
+  //First check if the categories (array of object) has a valid length and category (string, id) exists
+  if (categories.length > 0 && category) {
+    // //here we loop through categories and try to find the category where _id is the same as the selected category (remember category is an id)
+    let selectedCatInfo = categories.find(({ _id }) => _id === category);
+    // console.log({ selectedCatInfo }); //selectedCatInfo is an object with info of the selected category
+    // And we add the properties of the found category to the accumulator array
+    propertiesToFill.push(...selectedCatInfo.properties);
+    // Now we loop to find if the selected category has a parent id, if it does then we know the selected category has a parent and we try to find
+    // as well the info as previously we did, using now the parent id of the current category
+    while (selectedCatInfo?.parent?._id) {
+      const parentCat = categories.find(
+        ({ _id }) => _id === selectedCatInfo?.parent?._id
+      );
+      // And if the parent category has properties, we include them too to the accumulator array.
+      propertiesToFill.push(...parentCat.properties);
+      // The parent category now becomes the new selectedCatInfo for the next iteration
+      selectedCatInfo = parentCat;
+    }
+    //This loop repeats, checking the category hierarchy checking again if a category has a parent. If no more parent category,loop stops. This way we can gather properties from the entire lineage of the selected category into propertiesToFill
+  }
+  //and now we can display the aggregated properties dynamically in a div.
+
   return (
     <form onSubmit={saveProduct}>
       <label>Product name</label>
@@ -92,12 +136,31 @@ export default function ProductForm({
       <select value={category} onChange={(e) => setCategory(e.target.value)}>
         <option value="">No category</option>
         {categories.length > 0 &&
-          categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.name}
+          categories.map((categ) => (
+            <option key={categ._id} value={categ._id}>
+              {categ.name}
             </option>
           ))}
       </select>
+      {/*Here we display all properties. Reminder: good practice to use a key prop when rendering elemns in React! */}
+      {propertiesToFill.length > 0 &&
+        propertiesToFill.map((p, index) => (
+          <div className="flex gap-1" key={p.id || index}>
+            <div> {p.name}</div>
+            <select
+              //to render a dropdown for each property, allowing the user to select a value:
+              value={productProperties[p.name]}
+              onChange={(e) => handleSetProductProp(p.name, e.target.value)}
+            >
+              {/*for each val in your p.values array, an <option> element is created with its value attribute and display text set to val*/}
+              {p.values.map((val, valIndex) => (
+                <option key={valIndex} value={val}>
+                  {val}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
       <label>Photos</label>
       <div className="mb-2 flex flex-wrap gap-1">
         <ReactSortable
