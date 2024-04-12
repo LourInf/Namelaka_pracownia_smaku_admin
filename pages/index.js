@@ -10,11 +10,11 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="text-blue-900 flex justify-between">
+      <div className="text-custom-magenta flex justify-between">
         <h2>
           Hello, <b>{session?.user?.name}</b>
         </h2>
-        <div className="flex bg-gray-300 gap-1 text-black rounded-lg overflow-hidden">
+        <div className="flex bg-custom-pink gap-1 text-gray-500 rounded-lg overflow-hidden">
           <img
             src={session?.user?.image}
             alt="profile picture"
