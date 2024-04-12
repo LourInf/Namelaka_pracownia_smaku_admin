@@ -1,11 +1,17 @@
 import multiparty from "multiparty"; //library to parse formData
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
+import { isAdminRequest } from "./auth/[...nextauth]";
 import mime from "mime-types";
 //Note: multiparty operates with a callback pattern and it doesn't natively return a promise.That's why we need to wrap
 //its parse method in a Promise to integrate it into an async function with async/await
 
-export default async function handle(req, res) {
+export default async function handler(req, res) {
+  await mongooseConnect(); //first we need to ensure connection to our db before doing any operation!
+
+  //In every handler function we need to check if the session has a user with emails that are inside admin emails check
+  await isAdminRequest(req, res);
+
   const form = new multiparty.Form(); // Creating a new form instance to parse incoming formData
   //now we parse the formData asynchronously
   // The form.parse method extracts the fields and files from the formData

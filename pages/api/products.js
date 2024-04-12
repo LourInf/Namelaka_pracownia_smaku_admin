@@ -1,14 +1,18 @@
 // Import Product model for database & mongooseConnect function to ensure db connection
 import { Product } from "@/models/Product";
 import { mongooseConnect } from "@/lib/mongoose";
+import { isAdminRequest } from "./auth/[...nextauth]";
 
 //handles incoming request to this API route (api/products)
-export default async function handle(req, res) {
+export default async function handler(req, res) {
   // res.status(200).json(req.method); //we use it at first to test if it works (check in Network response)
   //1.Extract the HTTP method from the request object
   const { method } = req;
   //2.First we need to establish a connection to MongoDB database calling function mongooseConnect
   await mongooseConnect();
+
+  //In every handler function we need to check if the session has a user with emails that are inside admin emails check
+  await isAdminRequest(req, res);
 
   //fetch all product data stored in your MongoDB database.
   if (method === "GET") {

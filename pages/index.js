@@ -5,7 +5,8 @@ export default function Home() {
   const { data: session } = useSession();
   console.log(session);
 
-  if (!session) return;
+  // if no session is found, it renders the layout
+  if (!session) return <Layout />;
 
   return (
     <Layout>

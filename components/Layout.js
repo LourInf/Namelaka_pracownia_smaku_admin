@@ -1,6 +1,8 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import Nav from "@/components/Nav";
 
+//If no session exists, it shows a "Log in with Google" button.
+//If a session exists, it displays the navigation bar and the content (children).
 export default function Layout({ children }) {
   const { data: session } = useSession();
   if (!session) {
@@ -18,6 +20,7 @@ export default function Layout({ children }) {
     );
   }
 
+  //here we will have a div which will have the side navbar and then next to it another div where we will render the content of each of the pages, children
   return (
     <div className="bg-blue-900 min-h-screen flex">
       <Nav />

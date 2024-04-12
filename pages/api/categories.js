@@ -1,9 +1,13 @@
 import { mongooseConnect } from "@/lib/mongoose";
 import { Category } from "@/models/Category";
+import { isAdminRequest } from "./auth/[...nextauth]";
 
 export default async function handle(req, res) {
   const { method } = req; // Extract the HTTP method from the incoming request
   await mongooseConnect(); //first we need to ensure connection to our db before doing any operation!
+
+  //In every handler function we need to check if the session has a user with emails that are inside admin emails check
+  await isAdminRequest(req, res);
 
   //GET requests: we want to fetch all the category documents from the db
   if (method === "GET") {
