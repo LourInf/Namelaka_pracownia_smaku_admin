@@ -146,7 +146,7 @@ export default function Categories() {
             value={parentCategory}
             onChange={(e) => setParentCategory(e.target.value)}
           >
-            <option value="">No parent category</option>
+            <option value="">No group category</option>
             {categories.length > 0 &&
               categories.map((category) => (
                 <option key={category._id} value={category._id}>
@@ -159,7 +159,7 @@ export default function Categories() {
           <label className="block">Add Properties</label>
           <button
             type="button"
-            className="bg-custom-green text-white font-semibold text-xl py-2 pb-2.5 px-4 rounded-full inline-flex items-center justify-center mt-2 mb-3 hover:bg-custom-dark-green hover:font-bold transition-color"
+            className="bg-custom-green text-white font-semibold text-xl py-2 pb-2.5 px-4 rounded-full inline-flex items-center justify-center mt-2 mb-3 hover:bg-custom-dark-green hover:font-bold transition"
             onClick={addProperty}
           >
             +
@@ -230,12 +230,13 @@ export default function Categories() {
         </div>
       </form>
       {!editedCategory && (
-        <div className="bg-neutral-50 rounded-lg">
+        <div className="bg-neutral-50 rounded-lg pt-1 pb-2 px-5 shadow-md">
           <table className="basic cat mt-4">
             <thead>
               <tr>
-                <th>Category name</th>
-                <th>Parent Category</th>
+                <th>Category</th>
+                <th>Group Category</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -245,7 +246,10 @@ export default function Categories() {
                     <td>{category.name}</td>
                     <td>{category?.parent?.name}</td>
                     <td>
-                      <button onClick={() => editCategory(category)}>
+                      <button
+                        onClick={() => editCategory(category)}
+                        className="pl-3"
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"

@@ -145,8 +145,9 @@ export default function ProductForm({
       {/*Here we display all properties. Reminder: good practice to use a key prop when rendering elemns in React! */}
       {propertiesToFill.length > 0 &&
         propertiesToFill.map((p, index) => (
-          <div className="flex gap-1" key={p.id || index}>
-            <div> {p.name}</div>
+          <div className="" key={p.id || index}>
+            <label> {p.name[0].toUpperCase() + p.name.substring(1)}</label>
+
             <select
               //to render a dropdown for each property, allowing the user to select a value:
               value={productProperties[p.name]}
@@ -170,7 +171,7 @@ export default function ProductForm({
         >
           {!!images?.length &&
             images.map((link) => (
-              <div key={link} className="h-24">
+              <div key={link} className="h-24 shadow-md">
                 <img src={link} alt="" className="rounded-lg" />
               </div>
             ))}
@@ -184,7 +185,7 @@ export default function ProductForm({
         )}
         <label
           htmlFor="file-upload"
-          className="w-24 h-24 flex items-center justify-center text-gray-500 rounded-lg bg-gray-200 cursor-pointer"
+          className="w-24 h-24 flex items-center justify-center shadow-md text-gray-500 rounded-lg bg-gray-200 cursor-pointer  hover:bg-gray-300 transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -192,7 +193,7 @@ export default function ProductForm({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-5 h-5"
+            className="w-5 h-5 hover:w-6 hover:h-6 transition"
           >
             <path
               strokeLinecap="round"

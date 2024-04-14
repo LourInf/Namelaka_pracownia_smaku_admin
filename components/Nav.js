@@ -2,12 +2,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 
-export default function Nav() {
+export default function Nav({ show }) {
   const inactiveLink =
-    "flex gap-1 p-4 rounded-lg py-2 hover:bg-gray-100 hover:opacity-80";
+    "flex gap-1 p-4 rounded-lg py-2 hover:bg-neutral-50 hover:opacity-80";
   const activeLink =
     inactiveLink +
-    " bg-custom-green text-gray-600 font-semibold rounded-lg py-2";
+    " bg-custom-green text-green-900 font-semibold rounded-lg py-2"; //important to leave the space before next class to add!!
+  const inactiveIcon = "w-6 h-6";
+  const activeIcon = inactiveIcon + " text-gold";
   const router = useRouter();
   const { pathname } = router;
 
@@ -17,7 +19,12 @@ export default function Nav() {
   }
 
   return (
-    <aside className="text-gray-500 p-4 aside-links ">
+    <aside
+      className={
+        (show ? "left-0" : "-left-full") +
+        " top-0 text-gray-500 p-4 aside-links fixed w-full min-h-screen bg-custom-pink md:bg-transparent md:static md:w-auto transition-all"
+      }
+    >
       <Link href={"/"} className="flex gap-1 mb-4 mr-4">
         <span className="underline underline-offset-8 pb-2 text-lg text-gold">
           Namelaka Pracownia Smaku
@@ -35,7 +42,7 @@ export default function Nav() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className={pathname === "/" ? activeIcon : inactiveIcon}
           >
             <path
               strokeLinecap="round"
@@ -55,7 +62,9 @@ export default function Nav() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className={
+              pathname.includes("/products") ? activeIcon : inactiveIcon
+            }
           >
             <path
               strokeLinecap="round"
@@ -77,7 +86,9 @@ export default function Nav() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className={
+              pathname.includes("/categories") ? activeIcon : inactiveIcon
+            }
           >
             <path
               strokeLinecap="round"
@@ -102,7 +113,7 @@ export default function Nav() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className={pathname.includes("/orders") ? activeIcon : inactiveIcon}
           >
             <path
               strokeLinecap="round"
@@ -122,7 +133,9 @@ export default function Nav() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className={
+              pathname.includes("/settings") ? activeIcon : inactiveIcon
+            }
           >
             <path
               strokeLinecap="round"
@@ -137,7 +150,7 @@ export default function Nav() {
           </svg>
           Settings
         </Link>
-        <button onClick={logout} className={inactiveLink}>
+        <button onClick={logout} className="flex gap-1 p-4 rounded-lg py-2">
           <span className="text-custom-magenta flex">
             <svg
               xmlns="http://www.w3.org/2000/svg"
