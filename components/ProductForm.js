@@ -145,15 +145,16 @@ export default function ProductForm({
       {/*Here we display all properties. Reminder: good practice to use a key prop when rendering elemns in React! */}
       {propertiesToFill.length > 0 &&
         propertiesToFill.map((p, index) => (
-          <div className="" key={p.id || index}>
-            <label> {p.name[0].toUpperCase() + p.name.substring(1)}</label>
-
+          <div key={p.id || index}>
+            <label>{p.name[0].toUpperCase() + p.name.substring(1)}</label>
             <select
-              //to render a dropdown for each property, allowing the user to select a value:
-              value={productProperties[p.name]}
+              value={productProperties[p.name] || ""}
               onChange={(e) => handleSetProductProp(p.name, e.target.value)}
+              required
             >
-              {/*for each val in your p.values array, an <option> element is created with its value attribute and display text set to val*/}
+              <option value="" disabled>
+                Select a {p.name}
+              </option>{" "}
               {p.values.map((val, valIndex) => (
                 <option key={valIndex} value={val}>
                   {val}

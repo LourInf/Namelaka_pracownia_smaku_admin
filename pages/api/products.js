@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   //In every handler function we need to check if the session has a user with emails that are inside admin emails check
   await isAdminRequest(req, res);
 
-  //fetch all product data stored in your MongoDB database.
+  //fetch all product data stored in your MongoDB database or a single product by ID
   if (method === "GET") {
     if (req.query?.id) {
       res.json(await Product.findOne({ _id: req.query.id }));

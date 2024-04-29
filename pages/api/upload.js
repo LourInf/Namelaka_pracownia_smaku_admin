@@ -3,6 +3,7 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
 import { isAdminRequest } from "./auth/[...nextauth]";
 import mime from "mime-types";
+import { mongooseConnect } from "@/lib/mongoose";
 //Note: multiparty operates with a callback pattern and it doesn't natively return a promise.That's why we need to wrap
 //its parse method in a Promise to integrate it into an async function with async/await
 
