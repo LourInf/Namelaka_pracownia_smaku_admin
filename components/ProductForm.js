@@ -18,7 +18,8 @@ export default function ProductForm({
   const [price, setPrice] = useState(existingPrice || "");
   const [goToProducts, setGoToProducts] = useState(false);
   const [images, setImages] = useState(existingImages || []);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); //pics uploading spinner
+  const [loading, setLoading] = useState(false); // categories loading spinner
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(existingCategory || "");
   const [productProperties, setProductProperties] = useState(
@@ -28,8 +29,10 @@ export default function ProductForm({
 
   //fetches all the categories so we can later show them as options in the select input
   useEffect(() => {
+    setLoading(true);
     axios.get("/api/categories").then((result) => {
       setCategories(result.data);
+      setLoading(false);
     });
   }, []);
 
@@ -143,6 +146,7 @@ export default function ProductForm({
           ))}
       </select>
       {/*Here we display all properties. Reminder: good practice to use a key prop when rendering elemns in React! */}
+      {loading && <Spinner />}
       {propertiesToFill.length > 0 &&
         propertiesToFill.map((p, index) => (
           <div key={p.id || index}>

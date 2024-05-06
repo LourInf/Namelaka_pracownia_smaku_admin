@@ -1,13 +1,17 @@
 import Layout from "@/components/Layout";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Spinner from "@/components/Spinner";
 
 export default function Order() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     axios.get("/api/orders").then((response) => {
       setOrders(response.data);
+      setLoading(false);
     });
   }, []);
 
@@ -26,6 +30,15 @@ export default function Order() {
             </tr>
           </thead>
           <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={4}>
+                  <div className="flex justify-center items-center">
+                    <Spinner />
+                  </div>
+                </td>
+              </tr>
+            )}
             {orders.length > 0 &&
               orders.map((order, index) => (
                 <tr key={index}>

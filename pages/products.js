@@ -1,15 +1,20 @@
 import Layout from "@/components/Layout";
+import Spinner from "@/components/Spinner";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   //we useEffect hook to perform a side effect (fetching data), when the components first loads ([])
   useEffect(() => {
+    setLoading(true);
     axios.get("/api/products").then((response) => {
       //console.log(response.data);
       setProducts(response.data);
+      setLoading(false);
     });
   }, []);
 
@@ -32,6 +37,16 @@ export default function Products() {
             </tr>
           </thead>
           <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={4}>
+                  <div className="flex justify-center items-center">
+                    <Spinner />
+                  </div>
+                </td>
+              </tr>
+            )}
+
             {products.map((product) => (
               <tr key={product._id}>
                 <td>{product.title}</td>

@@ -7,12 +7,17 @@ import { useState } from "react";
 export default function Layout({ children }) {
   const [showNav, setShowNav] = useState(false);
   const { data: session } = useSession();
+
+  async function login() {
+    await signIn("google", { prompt: "select_account" }); //you need to add a provider as parameter, for google is "google" to return to our btn
+  }
+
   if (!session) {
     return (
       <div className="bg-custom-bg bg-cover w-screen h-screen flex items-center">
         <div className=" text-white text-center w-full">
           <button
-            onClick={() => signIn("google")} //you need to add a provider as parameter, for google is "google" to return to our btn
+            onClick={login}
             className="bg-custom-magenta text-white hover:bg-custom-dark-magenta transition p-2 px-4 rounded-lg"
           >
             Log in with Google

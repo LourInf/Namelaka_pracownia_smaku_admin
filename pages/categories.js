@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2"; // Import SweetAlert2
+import Spinner from "@/components/Spinner";
 
 export default function Categories() {
   const [name, setName] = useState(""); // For the category name input
@@ -9,6 +10,7 @@ export default function Categories() {
   const [parentCategory, setParentCategory] = useState(""); // For storing the parent category selection
   const [editedCategory, setEditedCategory] = useState(null); // For tracking the currently edited category
   const [properties, setProperties] = useState([]); // For storing properties
+  const [loading, setLoading] = useState(false); //For spinner
 
   //To fetch all categories on component mount
   useEffect(() => {
@@ -16,8 +18,10 @@ export default function Categories() {
   }, []);
 
   function fetchCategories() {
+    setLoading(true);
     axios.get("/api/categories").then((result) => {
       setCategories(result.data); // Update state with fetched data
+      setLoading(false);
     });
   }
 
@@ -240,6 +244,15 @@ export default function Categories() {
               </tr>
             </thead>
             <tbody>
+              {loading && (
+                <tr>
+                  <td colSpan={4}>
+                    <div className="flex justify-center items-center">
+                      <Spinner />
+                    </div>
+                  </td>
+                </tr>
+              )}
               {categories.length > 0 &&
                 categories.map((category, index) => (
                   <tr key={index}>
