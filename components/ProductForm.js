@@ -40,6 +40,13 @@ export default function ProductForm({
   //and sends this data to my server's endpoint using axios put (to edit an existing product, if it has an id)
   //or post (to create a new product) method
   async function saveProduct(e) {
+    e.preventDefault();
+    //first we do a simple form validation --> Ensuring that form data is valid before attempting to save can prevent unnecessary API requests and improve data integrity.
+    if (!title.trim() || !price) {
+      alert("Title and price are required.");
+      return;
+    }
+
     const data = {
       title,
       description,
@@ -48,12 +55,6 @@ export default function ProductForm({
       category,
       properties: productProperties,
     };
-    e.preventDefault();
-    //first we do a simple form validation --> Ensuring that form data is valid before attempting to save can prevent unnecessary API requests and improve data integrity.
-    if (!title.trim() || !price) {
-      alert("Title and price are required.");
-      return;
-    }
 
     if (_id) {
       //update the product with that id
@@ -126,6 +127,12 @@ export default function ProductForm({
   }
   //and now we can display the aggregated properties dynamically in a div.
 
+  function removeImageByUrl(imageUrl) {
+    setImages((currentImages) =>
+      currentImages.filter((img) => img !== imageUrl)
+    );
+  }
+
   return (
     <form onSubmit={saveProduct}>
       <label>Product name</label>
@@ -176,8 +183,15 @@ export default function ProductForm({
         >
           {!!images?.length &&
             images.map((link) => (
-              <div key={link} className="h-24 shadow-md">
-                <img src={link} alt="" className="rounded-lg" />
+              <div key={link} className="relative h-24 shadow-md w-full">
+                <img src={link} alt="" className="rounded-lg w-full h-full" />
+                <button
+                  onClick={() => removeImageByUrl(link)}
+                  className="absolute  right-0 top-0 text-white bg-red-300 rounded p-1"
+                  style={{ fontSize: "18px", lineHeight: "18px", zIndex: 10 }}
+                >
+                  &times;
+                </button>
               </div>
             ))}
         </ReactSortable>
