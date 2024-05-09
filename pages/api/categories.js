@@ -15,16 +15,16 @@ export default async function handle(req, res) {
   }
 
   if (method === "POST") {
-    let { name, parentCategory, properties } = req.body; // Extract necessary data from the request body
+    let { name, parentCategory, properties, images } = req.body; // Extract necessary data from the request body
     // const categoryDoc = await Category.create({ name, parent: parentCategory });
     // res.json(categoryDoc);
-
     try {
       // Create a new category doc with the provided name and parent category
       const categoryDoc = await Category.create({
         name,
         parent: parentCategory || undefined, // ensure that the parent field is either set to a valid ObjectId or not set at all, preventing runtime error because MongoDB expects an ObjectId, not an empty string (which is the case when "No parent category" is selected).
         properties,
+        images,
       });
       res.json(categoryDoc); // Respond with the newly created category doc
     } catch (error) {
@@ -33,7 +33,7 @@ export default async function handle(req, res) {
   }
 
   if (method === "PUT") {
-    let { name, parentCategory, properties, _id } = req.body; // // Here we also need to extract the document's ID
+    let { name, parentCategory, properties, _id, images } = req.body; // // Here we also need to extract the document's ID
     // If parentCategory is an empty string, set it to null
 
     try {
@@ -43,6 +43,7 @@ export default async function handle(req, res) {
           name,
           parent: parentCategory || undefined, // same as writing parentCategory===''? undefined :parentCategory
           properties,
+          images,
         }
       );
       res.json({ message: "Category updated successfully" });

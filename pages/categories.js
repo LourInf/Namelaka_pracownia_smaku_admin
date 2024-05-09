@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import Spinner from "@/components/Spinner";
+import { ReactSortable } from "react-sortablejs";
 
 export default function Categories() {
   const [name, setName] = useState(""); // For the category name input
@@ -11,6 +12,8 @@ export default function Categories() {
   const [editedCategory, setEditedCategory] = useState(null); // For tracking the currently edited category
   const [properties, setProperties] = useState([]); // For storing properties
   const [loading, setLoading] = useState(false); //For spinner
+  const [categoryImages, setCategoryImages] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   //To fetch all categories on component mount
   useEffect(() => {
@@ -25,6 +28,35 @@ export default function Categories() {
     });
   }
 
+  const fetchCarouselSettings = async () => {
+    const response = await axios.get("/api/carouselSettings");
+    setCarouselImages(response.data.images || []);
+  };
+
+  const uploadImages = async (e) => {
+    const files = e.target.files;
+    if (files.length) {
+      setIsUploading(true);
+      const formData = new FormData();
+      for (let file of files) {
+        formData.append("file", file);
+      }
+      try {
+        const response = await axios.post("/api/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        setCategoryImages([...categoryImages, ...response.data.links]);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        Swal.fire("Error", "Failed to upload images", "error");
+      } finally {
+        setIsUploading(false); //called no matter the outcome
+      }
+    }
+  };
+
   // handles form submission for both creating and updating categories
   async function saveCategory(e) {
     e.preventDefault();
@@ -36,6 +68,7 @@ export default function Categories() {
         name: property.name,
         values: property.values.split(","), // holds an array of values for that property. As we enter these values as a comma-separated string in the form, we need to convert this string into an array of values with the split method ( splits the string into an array at each comma, effectively separating the individual values)
       })),
+      images: categoryImages,
     };
     // If we're editing a category, send a PUT request
     if (editedCategory) {
@@ -47,6 +80,7 @@ export default function Categories() {
     }
     setName(""); // Reset the input fields
     setParentCategory("");
+    setCategoryImages([]);
     setProperties([]);
     fetchCategories(); // Refresh the list of categories
   }
@@ -159,6 +193,62 @@ export default function Categories() {
               ))}
           </select>
         </div>
+        <label>Category Photo</label>
+        {isUploading && <Spinner />}
+        <div className="mb-2 flex flex-wrap gap-3">
+          <ReactSortable
+            list={categoryImages}
+            setList={setCategoryImages}
+            className="flex flex-wrap gap-1"
+          >
+            {categoryImages.map((image, index) => (
+              <div key={index} className="w-24 h-24 relative">
+                <img
+                  src={image}
+                  alt={`Slide ${index}`}
+                  className="object-cover rounded-lg w-full h-full"
+                />
+                <button
+                  onClick={() => {
+                    const updatedImages = categoryImages.filter(
+                      (_, i) => i !== index
+                    );
+                    setCategoryImages(updatedImages);
+                  }}
+                  className="absolute right-0 top-0 text-white bg-red-300 rounded p-1"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </ReactSortable>
+          <label
+            htmlFor="file-upload"
+            className="w-24 h-24 flex items-center justify-center shadow-md text-gray-500 rounded-lg bg-gray-200 cursor-pointer  hover:bg-gray-300 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 hover:w-6 hover:h-6 transition"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+              />
+            </svg>
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            className="hidden"
+            multiple // Allow multiple file selection
+            onChange={uploadImages}
+          />
+        </div>
         <div className="mb-2">
           <label className="block">Add Properties</label>
           <button
@@ -229,7 +319,7 @@ export default function Categories() {
             </button>
           )}
           <button type="submit" className="btn-primary py-1 mt-5 mb-7">
-            Save changes
+            Save
           </button>
         </div>
       </form>
@@ -239,6 +329,7 @@ export default function Categories() {
             <thead>
               <tr>
                 <th>Category</th>
+                <th>Image</th>
                 <th>Group Category</th>
                 <th>Actions</th>
               </tr>
@@ -257,6 +348,21 @@ export default function Categories() {
                 categories.map((category, index) => (
                   <tr key={index}>
                     <td>{category.name}</td>
+                    <td>
+                      {category.images && category.images.length > 0 ? ( // Checking if there are images
+                        <img
+                          src={category.images[0]}
+                          alt={category.title}
+                          style={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "50px",
+                          }}
+                        /> // Display first image only
+                      ) : (
+                        <span>No image available</span> // Fallback text if no images are available
+                      )}
+                    </td>
                     <td>{category?.parent?.name}</td>
                     <td>
                       <button

@@ -9,6 +9,7 @@ const CategorySchema = new Schema({
   //ref: "Category": it tells Mongoose that the ObjectId stored in the parent field references a document in the "Category" collection.
   //This enables Mongoose to automatically handle population of the field, meaning it can replace the ObjectId with the actual document it refers to when you query for categories and use the .populate() method.
   properties: [{ type: Object }],
+  images: [{ type: String }], // Array to store image URLs
 });
 
 export const Category =
